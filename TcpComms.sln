@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpComms.Server", "TcpComms.Server\TcpComms.Server.csproj", "{C2723F80-13B6-4DC2-8509-1FC420045EB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcpComms.Client", "TcpComms.Client\TcpComms.Client.csproj", "{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{10E8482C-88D1-4B6A-8079-D6868043882F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "console", "console", "{C3FA45F6-0BF5-4651-A871-5F87B3B6FE4E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C2723F80-13B6-4DC2-8509-1FC420045EB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2723F80-13B6-4DC2-8509-1FC420045EB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2723F80-13B6-4DC2-8509-1FC420045EB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2723F80-13B6-4DC2-8509-1FC420045EB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C3FA45F6-0BF5-4651-A871-5F87B3B6FE4E} = {10E8482C-88D1-4B6A-8079-D6868043882F}
+		{BEAD05CF-685A-4D63-87C8-072DF9B1F4F6} = {C3FA45F6-0BF5-4651-A871-5F87B3B6FE4E}
+		{C2723F80-13B6-4DC2-8509-1FC420045EB1} = {C3FA45F6-0BF5-4651-A871-5F87B3B6FE4E}
+	EndGlobalSection
+EndGlobal
