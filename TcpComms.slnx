@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Folder Name="/Console/">
+    <Project Path="src\console\TcpComms.Client\TcpComms.Client.csproj" Type="Classic C#" />
+    <Project Path="src\console\TcpComms.Server\TcpComms.Server.csproj" Type="Classic C#" />
+  </Folder>
+</Solution>
