@@ -40,6 +40,7 @@ public partial class MainWindow : Window
             progress.Report("Connection established.");
 
             _ = Task.Run(() => HandleClientAsync(client, progress, cancellationToken), cancellationToken);
+            new Chat().Show();
         }
     }
     
