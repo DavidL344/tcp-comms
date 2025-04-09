@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Chat" Height="450" Width="800">
+        Title="Chat (Server --> Client)" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -17,8 +17,8 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBox Grid.Row="0" MinWidth="300" />
-        <Button Grid.Row="0" Grid.Column="1" Content="Send" />
-        <ListView Name="ListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+        <TextBox Grid.Row="0" MinWidth="300" Name="MessageBox" KeyDown="MessageBox_OnKeyDown" />
+        <Button Grid.Row="0" Grid.Column="1" Content="Send" Click="MessageSend" />
+        <ListView Name="MessageView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
     </Grid>
 </Window>
