@@ -39,7 +39,7 @@ public partial class Chat : Window
                     if (received.Trim() == string.Empty) continue;
                     
                     Progress.Report($"Message received: \"{received.Trim()}\"");
-                    messages.Report($"[Client ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
+                    messages.Report($"[Server ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
                 }
                 Progress.Report("Connection closed.");
             }
@@ -52,7 +52,7 @@ public partial class Chat : Window
 
     private void MessageSend(object sender, RoutedEventArgs e)
     {
-        _messages.Report($"[Server ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
+        _messages.Report($"[Client ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
         var payload = $"{MessageBox.Text}\n";
         var response = Encoding.UTF8.GetBytes(payload);
         
