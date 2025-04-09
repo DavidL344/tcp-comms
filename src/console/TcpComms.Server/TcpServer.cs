@@ -24,30 +24,45 @@ public class TcpServer
         _tcpListener = new TcpListener(host, port);
     }
 
-    public void Start()
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        var buffer = new byte[1024];
         _tcpListener.Start();
-
-        while (true)
-        {
-            using var client = _tcpListener.AcceptTcpClient();
-            Console.WriteLine("Connection established.");
+        Console.WriteLine("Server listening on {0}...", _tcpListener.LocalEndpoint);
         
-            var stream = client.GetStream();
-            int totalBytes;
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            var client = await _tcpListener.AcceptTcpClientAsync(cancellationToken);
+            Console.WriteLine("Connection established.");
 
-            while ((totalBytes = stream.Read(buffer, 0, buffer.Length)) > 0)
+            _ = Task.Run(() => HandleClientAsync(client, cancellationToken), cancellationToken);
+        }
+    }
+    
+    private async Task HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
+    {
+        using (client)
+        {
+            var buffer = new byte[1024];
+            var stream = client.GetStream();
+            
+            try
             {
-                var received = Encoding.UTF8.GetString(buffer, 0, totalBytes);
-            
-                var payload = "Hello from the server!\n";
-                Console.WriteLine($"Message received: \"{received.Trim()}\"");
-                var response = Encoding.UTF8.GetBytes(payload);
-            
-                stream.Write(response, 0, response.Length);
+                int bytesRead;
+                while ((bytesRead = await stream.ReadAsync(buffer, cancellationToken)) > 0)
+                {
+                    var received = Encoding.UTF8.GetString(buffer, 0, bytesRead);
+                    Console.WriteLine($"Message received: \"{received.Trim()}\"");
+                    
+                    var payload = $"Hello from the server! Received message: {received}";
+                    var response = Encoding.UTF8.GetBytes(payload);
+                    await stream.WriteAsync(response, cancellationToken);
+                }
+                Console.WriteLine("Connection closed.");
             }
-            Console.WriteLine("Connection closed.");
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error processing client: {e.Message}");
+            }
         }
     }
 }
