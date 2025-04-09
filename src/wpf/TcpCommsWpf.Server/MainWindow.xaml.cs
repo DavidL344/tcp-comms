@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Windows;
 
 namespace TcpCommsWpf.Server;
@@ -33,45 +32,14 @@ public partial class MainWindow : Window
         
         _tcpListener.Start();
         progress.Report($"Server listening on {_tcpListener.LocalEndpoint}...");
-        
+
         while (!cancellationToken.IsCancellationRequested)
         {
             var client = await _tcpListener.AcceptTcpClientAsync(cancellationToken);
             progress.Report("Connection established.");
-
-            _ = Task.Run(() => HandleClientAsync(client, progress, cancellationToken), cancellationToken);
-            new Chat().Show();
-        }
-    }
-    
-    private async Task HandleClientAsync(TcpClient client,
-        IProgress<string> progress, CancellationToken cancellationToken)
-    {
-        using (client)
-        {
-            var buffer = new byte[1024];
-            var stream = client.GetStream();
             
-            try
-            {
-                int bytesRead;
-                while ((bytesRead = await stream.ReadAsync(buffer, cancellationToken)) > 0)
-                {
-                    var received = Encoding.UTF8.GetString(buffer, 0, bytesRead);
-                    if (received.Trim() == string.Empty) continue;
-                    
-                    progress.Report($"Message received: \"{received.Trim()}\"");
-                    var payload = $"Hello from the server! Received message: {received}\n";
-                    
-                    var response = Encoding.UTF8.GetBytes(payload);
-                    await stream.WriteAsync(response, cancellationToken);
-                }
-                progress.Report("Connection closed.");
-            }
-            catch (Exception e)
-            {
-                progress.Report($"Error processing client: {e.Message}");
-            }
+            var chat = new Chat { Client = client, Progress = progress, CancellationToken = cancellationToken };
+            chat.Show();
         }
     }
     

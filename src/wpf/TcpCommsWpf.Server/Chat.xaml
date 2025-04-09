@@ -19,6 +19,6 @@
         </Grid.ColumnDefinitions>
         <TextBox Grid.Row="0" MinWidth="300" />
         <Button Grid.Row="0" Grid.Column="1" Content="Send" />
-        <ListView Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
+        <ListView Name="ListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
     </Grid>
 </Window>
