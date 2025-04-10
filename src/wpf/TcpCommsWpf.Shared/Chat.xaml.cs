@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Net.Sockets;
+﻿using System.Net.Sockets;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -30,6 +29,7 @@ public partial class Chat : Window
     private readonly Side _side;
     private readonly Side _oppositeSide;
     private readonly string _oppositeSideId;
+    private bool _closing;
     
     public Chat(Side side, string oppositeSideId)
     {
@@ -52,9 +52,12 @@ public partial class Chat : Window
                     MessageView.Items.Add($"[System] {_oppositeSide} connected.");
                     break;
                 case Event.ClientDisconnected:
-                    MessageBox.IsReadOnly = true;
+                    //MessageTextBox.IsReadOnly = true;
                     SendButton.IsEnabled = false;
                     MessageView.Items.Add($"[System] {_oppositeSide} disconnected.");
+                    if (!_closing)
+                        MessageBox.Show($"{_oppositeSide} disconnected.", Title,
+                            MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
                 default:
                     MessageView.Items.Add($"[System] An unknown event occured: {@event}");
@@ -128,17 +131,22 @@ public partial class Chat : Window
 
     private void MessageSend(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrEmpty(MessageBox.Text.Trim())) return;
-        if (!_stream.CanWrite) return;
+        if (string.IsNullOrEmpty(MessageTextBox.Text.Trim())) return;
+        if (!_stream.CanWrite)
+        {
+            MessageBox.Show($"Unable to send the message: {_oppositeSide} disconnected!",
+                Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         
-        var payload = $"{MessageBox.Text}\n";
+        var payload = $"{MessageTextBox.Text}\n";
         var response = Encoding.UTF8.GetBytes(payload);
         
-        _messages.Report($"{_side} ({GetFormattedTime()}): {MessageBox.Text}");
+        _messages.Report($"{_side} ({GetFormattedTime()}): {MessageTextBox.Text}");
         _stream.WriteAsync(response, CancellationToken).ConfigureAwait(false);
         
-        Progress.Report($"Message to \"{_oppositeSideId}\" sent: \"{MessageBox.Text}\"");
-        MessageBox.Text = string.Empty;
+        Progress.Report($"Message to \"{_oppositeSideId}\" sent: \"{MessageTextBox.Text}\"");
+        MessageTextBox.Text = string.Empty;
     }
 
     private void WatchForEnter(object sender, KeyEventArgs e)
@@ -148,8 +156,9 @@ public partial class Chat : Window
         MessageSend(sender, e);
     }
 
-    private void CloseConnection(object? sender, CancelEventArgs e)
+    private void CloseConnection(object? sender, EventArgs eventArgs)
     {
+        _closing = true;
         _stream.Flush();
         _stream.Close();
     }
