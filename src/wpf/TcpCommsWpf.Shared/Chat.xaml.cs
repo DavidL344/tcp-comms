@@ -46,6 +46,7 @@ public partial class Chat : Window
             switch (@event)
             {
                 case Event.ClientConnected:
+                    Progress!.Report($"Connection established ({(Guid.TryParse(tempId, out _) ? "GUID " : null)}{tempId}).");
                     MessageView.Items.Add($"{_oppositeSide} connected.");
                     break;
                 case Event.ClientDisconnected:
@@ -94,14 +95,14 @@ public partial class Chat : Window
                     Progress.Report($"Message received: \"{received.Trim()}\"");
                     messages.Report($"[{_oppositeSide} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
                 }
-                Progress.Report("Connection closed.");
+                Progress.Report($"{_oppositeSide} disconnected.");
             }
             catch (Exception e)
             {
                 if (e.InnerException is SocketException)
                 {
                     // The connection was closed
-                    Progress.Report($"{_side} disconnected.");
+                    Progress.Report("Connection closed.");
                     return;
                 }
                 

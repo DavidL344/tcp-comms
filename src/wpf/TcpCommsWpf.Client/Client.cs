@@ -21,10 +21,7 @@ public class Client
         
         _port = port;
         _client = new TcpClient();
-        _progress = new Progress<string>(message =>
-        {
-            // TODO: Notify the UI thread of any changes
-        });
+        _progress = new Progress<string>(Console.WriteLine);
     }
 
     public async Task ConnectAsync(CancellationToken cancellationToken = default)

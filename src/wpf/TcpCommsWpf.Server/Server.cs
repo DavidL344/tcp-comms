@@ -23,7 +23,6 @@ public class Server
         {
             var client = await _tcpListener.AcceptTcpClientAsync(cancellationToken);
             var clientId = Guid.NewGuid().ToString();
-            progress.Report($"Connection established (GUID {clientId}).");
             
             var chat = new Chat(Chat.Side.Server, clientId)
                 { Client = client, Progress = progress, CancellationToken = cancellationToken };
