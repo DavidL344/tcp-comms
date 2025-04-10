@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Windows;
-using TcpCommsWpf.Server;
+using TcpComms.Shared;
 
 namespace TcpCommsWpf.Client;
 
@@ -31,7 +31,8 @@ public partial class MainWindow : Window
         {
             await _client.ConnectAsync(host, port, cancellationToken);
             
-            var chat = new Chat { Client = _client, Progress = progress, CancellationToken = cancellationToken };
+            var chat = new Chat(Chat.Side.Client)
+                { Client = _client, Progress = progress, CancellationToken = cancellationToken };
             chat.Show();
         }
         catch (Exception e)

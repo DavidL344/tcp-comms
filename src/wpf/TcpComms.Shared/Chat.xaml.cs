@@ -3,19 +3,32 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
-namespace TcpCommsWpf.Server;
+namespace TcpComms.Shared;
 
 public partial class Chat : Window
 {
     public required TcpClient Client { get; init; }
     public required IProgress<string> Progress { get; init; }
     public required CancellationToken CancellationToken { get; init; }
-    private NetworkStream _stream;
-    private readonly IProgress<string> _messages;
     
-    public Chat()
+    public enum Side
     {
+        Client = 0,
+        Server = 1
+    }
+
+    private NetworkStream _stream = default!;
+    private readonly IProgress<string> _messages;
+    private readonly Side _side;
+    private readonly Side _oppositeSide;
+    
+    public Chat(Side side)
+    {
+        _side = side;
+        _oppositeSide = (Side)Math.Abs((int)side - 1);
+        
         InitializeComponent();
+        Title = $"Chat ({Enum.GetName(side)} --> {Enum.GetName(_oppositeSide)})";
         _messages = new Progress<string>(message =>
         {
             MessageView.Items.Add(message.Trim());
@@ -39,20 +52,20 @@ public partial class Chat : Window
                     if (received.Trim() == string.Empty) continue;
                     
                     Progress.Report($"Message received: \"{received.Trim()}\"");
-                    messages.Report($"[Server ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
+                    messages.Report($"[{_oppositeSide} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
                 }
                 Progress.Report("Connection closed.");
             }
             catch (Exception e)
             {
-                Progress.Report($"Error processing client: {e.Message}");
+                Progress.Report($"Error processing {_oppositeSide.ToString().ToLower()} ({e}): {e.Message}");
             }
         }
     }
-
+    
     private void MessageSend(object sender, RoutedEventArgs e)
     {
-        _messages.Report($"[Client ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
+        _messages.Report($"[{_side} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
         var payload = $"{MessageBox.Text}\n";
         var response = Encoding.UTF8.GetBytes(payload);
         
@@ -61,7 +74,7 @@ public partial class Chat : Window
         MessageBox.Text = string.Empty;
     }
 
-    private void MessageBox_OnKeyDown(object sender, KeyEventArgs e)
+    private void WatchForEnter(object sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter) return;
         e.Handled = true;

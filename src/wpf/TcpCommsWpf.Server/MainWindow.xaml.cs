@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Windows;
+using TcpComms.Shared;
 
 namespace TcpCommsWpf.Server;
 
@@ -38,7 +39,8 @@ public partial class MainWindow : Window
             var client = await _tcpListener.AcceptTcpClientAsync(cancellationToken);
             progress.Report("Connection established.");
             
-            var chat = new Chat { Client = client, Progress = progress, CancellationToken = cancellationToken };
+            var chat = new Chat(Chat.Side.Server)
+                { Client = client, Progress = progress, CancellationToken = cancellationToken };
             chat.Show();
         }
     }
