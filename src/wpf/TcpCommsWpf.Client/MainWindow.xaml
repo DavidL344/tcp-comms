@@ -8,15 +8,28 @@
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
         Title="MainWindow" Height="450" Width="800">
-    <ui:SimpleStackPanel MinWidth="400" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-        <TextBlock Text="&lt;IP Address&gt;:&lt;Port&gt;" TextAlignment="Center" />
+    <Grid Width="800" Height="450">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
         
-        <ui:SimpleStackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="5">
-            <TextBox Name="Ip" Text="127.0.0.1" />
-            <TextBlock Text=":" VerticalAlignment="Center" />
-            <TextBox Name="Port" Text="8080" />
+        <ui:SimpleStackPanel MinWidth="400" Spacing="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBlock Text="IP Address &amp; Port" TextAlignment="Center" />
+        
+            <ui:SimpleStackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="10">
+                <TextBox Name="Ip" Text="127.0.0.1" TextAlignment="Right" Width="150" />
+                <TextBlock Text=":" VerticalAlignment="Center" />
+                <TextBox Name="Port" Text="8080" Width="150" />
+            </ui:SimpleStackPanel>
+        
+            <Button Name="Submit" Content="Log In" Click="Login" HorizontalAlignment="Center" />
+            <StatusBar>
+                <StatusBarItem HorizontalContentAlignment="Center">
+                    <TextBlock Name="StatusBar">Loading...</TextBlock>
+                </StatusBarItem>
+            </StatusBar>
         </ui:SimpleStackPanel>
         
-        <Button Name="Submit" Content="Log In" Click="Login" HorizontalAlignment="Center" />
-    </ui:SimpleStackPanel>
+    </Grid>
 </Window>

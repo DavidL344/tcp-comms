@@ -30,7 +30,7 @@ public class Client
     public async Task ConnectAsync(CancellationToken cancellationToken = default)
     {
         await _client.ConnectAsync(_host, _port, cancellationToken);
-            
+        
         var chat = new Chat(Chat.Side.Client, $"{_host}:{_port}")
             { Client = _client, Progress = _progress, CancellationToken = cancellationToken };
         chat.Show();
