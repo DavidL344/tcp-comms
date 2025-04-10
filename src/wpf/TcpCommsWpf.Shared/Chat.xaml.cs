@@ -29,14 +29,16 @@ public partial class Chat : Window
     private readonly IProgress<Event> _events;
     private readonly Side _side;
     private readonly Side _oppositeSide;
+    private readonly string _oppositeSideId;
     
-    public Chat(Side side, string tempId)
+    public Chat(Side side, string oppositeSideId)
     {
         _side = side;
         _oppositeSide = (Side)Math.Abs((int)side - 1);
+        _oppositeSideId = oppositeSideId;
         
         InitializeComponent();
-        Title = $"Chat ({Enum.GetName(side)} --> {Enum.GetName(_oppositeSide)} [{tempId}])";
+        Title = $"Chat ({Enum.GetName(side)} --> {Enum.GetName(_oppositeSide)} [{oppositeSideId}])";
         _messages = new Progress<string>(message =>
         {
             MessageView.Items.Add(message.Trim());
@@ -46,16 +48,16 @@ public partial class Chat : Window
             switch (@event)
             {
                 case Event.ClientConnected:
-                    Progress!.Report($"Connection established ({(Guid.TryParse(tempId, out _) ? "GUID " : null)}{tempId}).");
-                    MessageView.Items.Add($"{_oppositeSide} connected.");
+                    Progress!.Report($"Connection established ({(Guid.TryParse(oppositeSideId, out _) ? "GUID " : null)}{oppositeSideId}).");
+                    MessageView.Items.Add($"[System] {_oppositeSide} connected.");
                     break;
                 case Event.ClientDisconnected:
                     MessageBox.IsReadOnly = true;
                     SendButton.IsEnabled = false;
-                    MessageView.Items.Add($"{_oppositeSide} disconnected.");
+                    MessageView.Items.Add($"[System] {_oppositeSide} disconnected.");
                     break;
                 default:
-                    MessageView.Items.Add($"An unknown event occured: {@event}");
+                    MessageView.Items.Add($"[System] An unknown event occured: {@event}");
                     break;
             }
         });
@@ -92,10 +94,10 @@ public partial class Chat : Window
                     var received = Encoding.UTF8.GetString(buffer, 0, bytesRead);
                     if (received.Trim() == string.Empty) continue;
                     
-                    Progress.Report($"Message received: \"{received.Trim()}\"");
-                    messages.Report($"[{_oppositeSide} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {received}");
+                    Progress.Report($"Message from \"{_oppositeSideId}\" received: \"{received.Trim()}\"");
+                    messages.Report($"{_oppositeSide} ({GetFormattedTime()}): {received}");
                 }
-                Progress.Report($"{_oppositeSide} disconnected.");
+                Progress.Report($"{_oppositeSide} ({_oppositeSideId}) disconnected.");
             }
             catch (Exception e)
             {
@@ -106,7 +108,8 @@ public partial class Chat : Window
                     return;
                 }
                 
-                Progress.Report($"Error processing {_oppositeSide.ToString().ToLower()}: {e.Message}");
+                Progress.Report(
+                    $"Error processing {_oppositeSide.ToString().ToLower()} ({_oppositeSideId}): {e.Message}");
 #if DEBUG
                 Progress.Report(e.ToString());
 #endif
@@ -114,6 +117,15 @@ public partial class Chat : Window
         }
     }
     
+    private string GetFormattedDateTime()
+    {
+        var dt = DateTime.Now;
+        return $"{dt.Day:D2}.{dt.Month:D2}.{DateTime.Now:yy} {dt.Hour:D2}:{dt.Minute:D2}:{dt.Second:D2}";
+    }
+    
+    private string GetFormattedTime()
+        => $"{DateTime.Now.Hour:D2}:{DateTime.Now.Minute:D2}:{DateTime.Now.Second:D2}";
+
     private void MessageSend(object sender, RoutedEventArgs e)
     {
         if (string.IsNullOrEmpty(MessageBox.Text.Trim())) return;
@@ -122,10 +134,10 @@ public partial class Chat : Window
         var payload = $"{MessageBox.Text}\n";
         var response = Encoding.UTF8.GetBytes(payload);
         
-        _messages.Report($"[{_side} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
+        _messages.Report($"{_side} ({GetFormattedTime()}): {MessageBox.Text}");
         _stream.WriteAsync(response, CancellationToken).ConfigureAwait(false);
         
-        Progress.Report($"Message sent: \"{MessageBox.Text}\"");
+        Progress.Report($"Message to \"{_oppositeSideId}\" sent: \"{MessageBox.Text}\"");
         MessageBox.Text = string.Empty;
     }
 
