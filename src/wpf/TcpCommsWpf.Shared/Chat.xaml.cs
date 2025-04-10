@@ -22,13 +22,13 @@ public partial class Chat : Window
     private readonly Side _side;
     private readonly Side _oppositeSide;
     
-    public Chat(Side side)
+    public Chat(Side side, string tempId)
     {
         _side = side;
         _oppositeSide = (Side)Math.Abs((int)side - 1);
         
         InitializeComponent();
-        Title = $"Chat ({Enum.GetName(side)} --> {Enum.GetName(_oppositeSide)})";
+        Title = $"Chat ({Enum.GetName(side)} --> {Enum.GetName(_oppositeSide)} [{tempId}])";
         _messages = new Progress<string>(message =>
         {
             MessageView.Items.Add(message.Trim());
