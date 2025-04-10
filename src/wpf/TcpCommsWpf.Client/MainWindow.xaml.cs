@@ -24,7 +24,7 @@ public partial class MainWindow : Window
         {
             EnableForm(false);
             _progress.Report("Connecting...");
-            await Task.Delay(1000); // To show the connecting status
+            await Task.Delay(1); // To show the connecting status
             
             if (!int.TryParse(Port.Text.Trim(), out var port))
                 throw new ArgumentException($"The port {port} must be a valid integer!", nameof(port));

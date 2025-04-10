@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="MainWindow" Height="450" Width="800">
+        Title="TcpCommsWpf (Client)" Height="450" Width="800">
     <Grid Width="800" Height="450">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
