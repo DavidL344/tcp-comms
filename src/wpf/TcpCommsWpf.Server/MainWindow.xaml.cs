@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Sockets;
 using System.Windows;
-using TcpComms.Shared;
+using TcpCommsWpf.Shared;
 
 namespace TcpCommsWpf.Server;
 

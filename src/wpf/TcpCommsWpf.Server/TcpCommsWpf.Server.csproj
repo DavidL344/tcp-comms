@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\TcpComms.Shared\TcpComms.Shared.csproj" />
+      <ProjectReference Include="..\TcpCommsWpf.Shared\TcpCommsWpf.Shared.csproj" />
     </ItemGroup>
 
 </Project>

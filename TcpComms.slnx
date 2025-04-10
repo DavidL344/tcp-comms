@@ -4,8 +4,8 @@
     <Project Path="src\console\TcpComms.Server\TcpComms.Server.csproj" Type="Classic C#" />
   </Folder>
   <Folder Name="/WPF/">
-    <Project Path="src\wpf\TcpComms.Shared\TcpComms.Shared.csproj" Type="Classic C#" />
     <Project Path="src\wpf\TcpCommsWpf.Client\TcpCommsWpf.Client.csproj" Type="Classic C#" />
     <Project Path="src\wpf\TcpCommsWpf.Server\TcpCommsWpf.Server.csproj" Type="Classic C#" />
+    <Project Path="src\wpf\TcpCommsWpf.Shared\TcpCommsWpf.Shared.csproj" Type="Classic C#" />
   </Folder>
 </Solution>
