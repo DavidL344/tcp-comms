@@ -31,7 +31,7 @@ public class Client
     {
         await _client.ConnectAsync(_host, _port, cancellationToken);
             
-        var chat = new Chat(Chat.Side.Client, Guid.NewGuid().ToString())
+        var chat = new Chat(Chat.Side.Client, $"{_host}:{_port}")
             { Client = _client, Progress = _progress, CancellationToken = cancellationToken };
         chat.Show();
     }

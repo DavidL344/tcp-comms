@@ -1,4 +1,5 @@
-﻿using System.Net.Sockets;
+﻿using System.ComponentModel;
+using System.Net.Sockets;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -17,8 +18,15 @@ public partial class Chat : Window
         Server = 1
     }
 
+    private enum Event
+    {
+        ClientConnected,
+        ClientDisconnected
+    }
+
     private NetworkStream _stream = default!;
     private readonly IProgress<string> _messages;
+    private readonly IProgress<Event> _events;
     private readonly Side _side;
     private readonly Side _oppositeSide;
     
@@ -33,6 +41,23 @@ public partial class Chat : Window
         {
             MessageView.Items.Add(message.Trim());
         });
+        _events = new Progress<Event>(@event =>
+        {
+            switch (@event)
+            {
+                case Event.ClientConnected:
+                    MessageView.Items.Add($"{_oppositeSide} connected.");
+                    break;
+                case Event.ClientDisconnected:
+                    MessageBox.IsReadOnly = true;
+                    SendButton.IsEnabled = false;
+                    MessageView.Items.Add($"{_oppositeSide} disconnected.");
+                    break;
+                default:
+                    MessageView.Items.Add($"An unknown event occured: {@event}");
+                    break;
+            }
+        });
         _ = Task.Run(() => HandleClientAsync(_messages), CancellationToken);
     }
     
@@ -42,6 +67,21 @@ public partial class Chat : Window
         {
             var buffer = new byte[1024];
             _stream = Client.GetStream();
+            
+            _ = Task.Run(() =>
+            {
+                _events.Report(Event.ClientConnected);
+                while (true)
+                {
+                    Task.Delay(1000, CancellationToken);
+                    if (_stream.CanWrite) continue;
+                    
+                    _events.Report(Event.ClientDisconnected);
+                    
+                    _stream.Dispose();
+                    return Task.CompletedTask;
+                }
+            }, CancellationToken);
             
             try
             {
@@ -58,18 +98,32 @@ public partial class Chat : Window
             }
             catch (Exception e)
             {
-                Progress.Report($"Error processing {_oppositeSide.ToString().ToLower()} ({e}): {e.Message}");
+                if (e.InnerException is SocketException)
+                {
+                    // The connection was closed
+                    Progress.Report($"{_side} disconnected.");
+                    return;
+                }
+                
+                Progress.Report($"Error processing {_oppositeSide.ToString().ToLower()}: {e.Message}");
+#if DEBUG
+                Progress.Report(e.ToString());
+#endif
             }
         }
     }
     
     private void MessageSend(object sender, RoutedEventArgs e)
     {
-        _messages.Report($"[{_side} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
+        if (string.IsNullOrEmpty(MessageBox.Text.Trim())) return;
+        if (!_stream.CanWrite) return;
+        
         var payload = $"{MessageBox.Text}\n";
         var response = Encoding.UTF8.GetBytes(payload);
         
+        _messages.Report($"[{_side} ({DateTime.Now.Hour}:{DateTime.Now.Minute})]: {MessageBox.Text}");
         _stream.WriteAsync(response, CancellationToken).ConfigureAwait(false);
+        
         Progress.Report($"Message sent: \"{MessageBox.Text}\"");
         MessageBox.Text = string.Empty;
     }
@@ -79,5 +133,11 @@ public partial class Chat : Window
         if (e.Key != Key.Enter) return;
         e.Handled = true;
         MessageSend(sender, e);
+    }
+
+    private void CloseConnection(object? sender, CancelEventArgs e)
+    {
+        _stream.Flush();
+        _stream.Close();
     }
 }

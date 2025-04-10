@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:TcpCommsWpf.Shared"
         mc:Ignorable="d"
         ui:WindowHelper.UseModernWindowStyle="True"
-        Title="Chat" Height="450" Width="800">
+        Title="Chat" Height="450" Width="800" Closing="CloseConnection">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -26,7 +26,7 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBox Grid.Row="0" MinWidth="300" Name="MessageBox" KeyDown="WatchForEnter" />
-        <Button Grid.Row="0" Grid.Column="1" Content="Send" Click="MessageSend" />
+        <Button Grid.Row="0" Grid.Column="1" Content="Send" Name="SendButton" Click="MessageSend" />
         <ListView Name="MessageView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" />
     </Grid>
 </Window>

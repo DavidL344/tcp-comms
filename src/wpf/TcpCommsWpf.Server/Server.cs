@@ -29,5 +29,7 @@ public class Server
                 { Client = client, Progress = progress, CancellationToken = cancellationToken };
             chat.Show();
         }
+        
+        _tcpListener.Stop();
     }
 }
