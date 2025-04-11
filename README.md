@@ -112,6 +112,9 @@ finally
 {
     _progress.Report("Ready");
 }
+
+// private void UpdateStatus(string text)
+StatusBar.Text = text;
 ```
 
 My favourite way of utilising them has to be for event logging (`Progress<Event>`):
