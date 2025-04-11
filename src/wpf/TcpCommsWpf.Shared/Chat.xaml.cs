@@ -74,17 +74,17 @@ public partial class Chat : Window
             var buffer = new byte[1024];
             _stream = Client.GetStream();
             
-            _ = Task.Run(() =>
+            _ = Task.Run(async () =>
             {
                 _events.Report(Event.ClientConnected);
                 while (true)
                 {
-                    Task.Delay(1000, CancellationToken);
+                    await Task.Delay(1000, CancellationToken);
                     if (_stream.CanWrite) continue;
                     
                     _events.Report(Event.ClientDisconnected);
                     
-                    _stream.Dispose();
+                    await _stream.DisposeAsync();
                     return Task.CompletedTask;
                 }
             }, CancellationToken);
